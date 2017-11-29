@@ -6,12 +6,14 @@ public class Book {
     private String author;
     private String name;
     private int stockAvailable;
+    private int stockTotal;
 
-    public Book(String isbn,String autor, String name, int stockAvailable ) {
+    public Book(String isbn,String autor, String name, int stockAvailable, int stockTotal) {
         this.idISBN=isbn;
         this.author=autor;
         this.name=name;
         this.stockAvailable=stockAvailable;
+        this.stockTotal=stockTotal;
     }
 
     /**
@@ -68,6 +70,22 @@ public class Book {
      */
     public void setStockAvailable(int stockAvailable) {
         this.stockAvailable = stockAvailable;
+    }
+    
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public int getStockTotal() {
+        return stockTotal;
+    }
+
+    public void setStockTotal(int stockTotal) {
+        this.stockTotal = stockTotal;
     }
 
     /* (non-Javadoc)

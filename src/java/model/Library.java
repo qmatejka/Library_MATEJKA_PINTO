@@ -1,20 +1,34 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Library {
     private ArrayList<Book> books = new ArrayList<Book>();
+    private ArrayList<User> users = new ArrayList<User>();
 
     public Library() {
         initLibrary();
     }
     private void initLibrary(){
-        Book book1 = new Book("4875412358", "Haruki Murakami", "1Q84", 2);
-        Book book2 = new Book("9754132564", "Emile Zola", "Gervaise", 0);
-        Book book3 = new Book("4814876133", "Franz Kafka", "Métamorphose", 5);
+        Book book1 = new Book("4875412358", "Haruki Murakami", "1Q84", 2, 2);
+        Book book2 = new Book("9754132564", "Emile Zola", "Gervaise", 0, 3);
+        Book book3 = new Book("4814876133", "Franz Kafka", "Métamorphose", 5, 6);
         this.books.add(book1);
         this.books.add(book2);
         this.books.add(book3);
+        
+        this.users.add(new User("admin", "admin", true));
+        this.users.add(new User("biblio", "biblio", true));
+        this.users.add(new User("custom", "custom", false));
+    }
+    
+    public User getUserByName(String name){
+        for(User user:users){
+                if(user.getUsername().equals(name)) return user;
+        }
+        return null;
     }
     
     /**

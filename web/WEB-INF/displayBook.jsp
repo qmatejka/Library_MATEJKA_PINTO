@@ -23,6 +23,7 @@
             <ul>ID: <% out.print(book.getIdISBN()); %></ul>
             <ul>Author: <% out.print(book.getAutor()); %></ul>
             <ul>Stock available: <% out.print(book.getStockAvailable()); %></ul>
+            <ul>Stock total: <% out.print(book.getStockTotal()); %></ul>
         </li>
     </body>
 </html>

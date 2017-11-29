@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import model.Book;
 import model.BookNotFoundException;
 import model.Library;
+import model.User;
 
 
 /**
@@ -81,12 +82,14 @@ public class Controller extends HttpServlet {
             throws ServletException, IOException {
         RequestDispatcher rd = null;
         Book book = null;
-        String userLogin = "aze";
-        String userPasswd = "aze";
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         if(request.getParameter("create")!=null){
-            book = new Book(request.getParameter("name"), request.getParameter("author"), request.getParameter("isbn"), Integer.parseInt(request.getParameter("stock")));
+            book = new Book(request.getParameter("name"), 
+                    request.getParameter("author"), 
+                    request.getParameter("isbn"), 
+                    Integer.parseInt(request.getParameter("stock")), 
+                    Integer.parseInt(request.getParameter("stockTotal")));
             request.setAttribute("book", book);       
             rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
         }else if(request.getParameter("update") != null){
@@ -95,6 +98,7 @@ public class Controller extends HttpServlet {
                 book.setName(request.getParameter("name"));
                 book.setAutor(request.getParameter("author"));
                 book.setStockAvailable(Integer.parseInt(request.getParameter("stock")));
+                book.setStockTotal(Integer.parseInt(request.getParameter("stockTotal")));
                 request.setAttribute("book", book);  
             } catch (BookNotFoundException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -102,16 +106,21 @@ public class Controller extends HttpServlet {
             rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
         }
         else{
-            if ((userLogin.equalsIgnoreCase(username))
-                  && (userPasswd.equals(password))) {
-                HttpSession session = request.getSession();
-                session.setAttribute("user", username);
-                rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
-                //User user = new User(username, password);
-                //request.setAttribute("user", user);
+            User user = library.getUserByName(username);
+            if(user != null){
+                if ((user.getUsername().equalsIgnoreCase(username))
+                      && (user.getPassword().equals(password))) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", username);
+                    rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
+                    //User user = new User(username, password);
+                    //request.setAttribute("user", user);
+                } else {
+                    rd = request.getRequestDispatcher(VIEW_FOLDER+"/error.jsp");
+                }
             } else {
                 rd = request.getRequestDispatcher(VIEW_FOLDER+"/error.jsp");
-            }
+            } 
         }
         rd.forward(request, response);
     }
