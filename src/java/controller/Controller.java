@@ -7,9 +7,11 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,18 +64,9 @@ public class Controller extends HttpServlet {
             if(request.getParameter("action").equals("disconnect")){
                 request.getSession().invalidate();
             }
-        String bookName = request.getParameter("name");
-        if(bookName != null){
-            dispatcher = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
-            Book book = null;
-            Library library = new Library();
-            try {
-                book = library.getBookByName(bookName);
-            } catch (BookNotFoundException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            request.setAttribute("book", book);       
-        }
+        String search = request.getParameter("searchValue");
+        ArrayList<Book> results = searchBook(search, library);
+        request.setAttribute("searchResults", results);
         dispatcher.forward(request, response);
     }
 
@@ -98,7 +91,7 @@ public class Controller extends HttpServlet {
             try {
                 book = library.getBookByISBN(request.getParameter("isbn"));
                 book.setName(request.getParameter("name"));
-                book.setAutor(request.getParameter("author"));
+                book.setAuthor(request.getParameter("author"));
                 book.setStockAvailable(Integer.parseInt(request.getParameter("stock")));
                 book.setStockTotal(Integer.parseInt(request.getParameter("stockTotal")));
                 request.setAttribute("book", book);  
@@ -134,8 +127,27 @@ public class Controller extends HttpServlet {
         rd.forward(request, response);
     }
     
-    private void testBook(){
-        
+    private ArrayList<Book> searchBook(String search, Library library){
+        ArrayList<Book> results = new ArrayList<Book>();
+        if(search != null){
+            try {
+                if(library.getBookByName(search) != null)
+                    results.add(library.getBookByName(search));
+                if(library.getBookByAuthor(search) != null && !results.contains(library.getBookByAuthor(search)))
+                    results.add(library.getBookByAuthor(search));
+                for(Book b : library.getBooks()){
+                    //if(search.toLowerCase().contains(b.getAuthor().toLowerCase()) ||
+                    //   search.toLowerCase().contains(b.getName().toLowerCase())){
+                    if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(b.getAuthor()).find()){
+                        if(!results.contains(b))
+                            results.add(b);
+                    }
+                }
+            } catch (BookNotFoundException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return results;
     }
     
     @Override

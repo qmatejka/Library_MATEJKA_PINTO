@@ -12,12 +12,14 @@ public class Library {
         initLibrary();
     }
     private void initLibrary(){
-        Book book1 = new Book("4875412358", "Haruki Murakami", "1Q84", 2, 2);
-        Book book2 = new Book("9754132564", "Emile Zola", "Gervaise", 0, 3);
-        Book book3 = new Book("4814876133", "Franz Kafka", "Métamorphose", 5, 6);
-        this.books.add(book1);
-        this.books.add(book2);
-        this.books.add(book3);
+        this.books.add(new Book("4875412358", "Haruki Murakami", "1Q84", 2, 2));
+        this.books.add(new Book("9754132568", "Yamete Murakami", "Yametekurasai", 4, 4));
+        this.books.add(new Book("9754132564", "Emile Zola", "Gervaise", 0, 3));
+        this.books.add(new Book("4814876133", "Franz Kafka", "Métamorphose", 5, 6));
+        this.books.add(new Book("4814876135", "Franz Muller", "Morpheus", 3, 6));
+        this.books.add(new Book("4814876136", "Toto", "Toto", 5, 5));
+        this.books.add(new Book("4814876137", "Albert Einstein", "La théorie de la relativité", 0, 2));
+        this.books.add(new Book("4814876138", "El Hadj", "So comman", 3, 7));
         
         this.users.add(new User("admin", "admin", true));
         this.users.add(new User("biblio", "biblio", true));
@@ -41,9 +43,9 @@ public class Library {
      */
     public Book getBookByAuthor(String author) throws BookNotFoundException{
         for(Book book:books){
-                if(book.getAutor().equals(author)) return book;
+                if(book.getAuthor().equals(author)) return book;
         }
-        throw new BookNotFoundException();
+        return null;
     }
     /**
      * 
@@ -57,7 +59,7 @@ public class Library {
         for(Book book:books){
                 if(book.getName().equals(name)) return book;
         }
-        throw new BookNotFoundException();
+        return null;
     }
     
     public Book getBookByISBN(String isbn) throws BookNotFoundException{

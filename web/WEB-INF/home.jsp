@@ -4,8 +4,10 @@
     Author     : qmatejka
 --%>
 
+<%@page import="model.Book"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="model.User"%>
+<%@page import="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -26,10 +28,27 @@
                 <a href="home?action=disconnect">Disconnect</a>
         <%
             }
-            if(request.getAttribute("book") != null){
+            if(request.getAttribute("searchResults") != null){
+                ArrayList<Book> books = (ArrayList<Book>)request.getAttribute("searchResults");
+                for(Book book : books){
+                    User user = (session.getAttribute("user")!=null) ?(User) session.getAttribute("user") : null; 
         %>    
-                <jsp:include page="/WEB-INF/formBook.jsp" />
-        <%}%>
+                <form name="bookForm" action="home" method="POST">
+                    Name: <input type="text" name="name" size="30" value="<%=book.getName()%>" />
+                    Author: <input type="text" name="author" size="30" value="<%=book.getAuthor()%>"  />
+                    ISBN: <input type="text" name="isbn" size="30" value="<%=book.getIdISBN()%>" <% if(!book.getIdISBN().equals("")){%>readonly="readonly" style="background:gainsboro"<%}%>/>
+                    Stock total: <input type="number" name="stockTotal" size="30" value="<%=book.getStockTotal()%>" />
+                    Stock:  <input type="number" name="stock" size="30" value="<%=book.getStockAvailable()%>" />
+                    <% if(user != null && user.isAdmin()){ %>
+                        <button type="submit" name="add" value="add">Add</button>
+                        <button type="submit" name="update" value="update">Update</button>
+                        <button type="submit" name="remove" value="remove">Remove</button>
+                    <% } %>
+                </form>
+        <%
+                }
+            }
+        %>
 
         
     </body>

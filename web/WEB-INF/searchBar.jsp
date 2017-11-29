@@ -7,6 +7,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <form name="searchName" action="home" method="GET" >
-    Name : <input type="text" name="name" />
+    Search : <input type="text" name="searchValue" />
     <input type='submit' value='Search'/>
 </form>

@@ -31,20 +31,6 @@ public class Book {
     }
 
     /**
-     * @return the autor
-     */
-    public String getAutor() {
-        return author;
-    }
-
-    /**
-     * @param autor the autor to set
-     */
-    public void setAutor(String autor) {
-        this.author = autor;
-    }
-
-    /**
      * @return the name
      */
     public String getName() {
