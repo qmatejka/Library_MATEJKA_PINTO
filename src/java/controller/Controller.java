@@ -84,12 +84,14 @@ public class Controller extends HttpServlet {
         Book book = null;
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        if(request.getParameter("create")!=null){
-            book = new Book(request.getParameter("name"), 
+        if(request.getParameter("add")!=null){
+            book = new Book(
+                    request.getParameter("name"), 
                     request.getParameter("author"), 
                     request.getParameter("isbn"), 
                     Integer.parseInt(request.getParameter("stock")), 
-                    Integer.parseInt(request.getParameter("stockTotal")));
+                    Integer.parseInt(request.getParameter("stockTotal"))
+            );
             request.setAttribute("book", book);       
             rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
         }else if(request.getParameter("update") != null){
@@ -104,6 +106,13 @@ public class Controller extends HttpServlet {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
             rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
+        }else if(request.getParameter("remove") != null){
+            try {
+                book = library.getBookByISBN(request.getParameter("isbn"));
+                library.getBooks().remove(book);
+            } catch (BookNotFoundException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         else{
             User user = library.getUserByName(username);
@@ -111,7 +120,7 @@ public class Controller extends HttpServlet {
                 if ((user.getUsername().equalsIgnoreCase(username))
                       && (user.getPassword().equals(password))) {
                     HttpSession session = request.getSession();
-                    session.setAttribute("user", username);
+                    session.setAttribute("user", user);
                     rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
                     //User user = new User(username, password);
                     //request.setAttribute("user", user);

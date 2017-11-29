@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="model.User"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -20,7 +21,7 @@
                 <jsp:include page="/WEB-INF/login.jsp"/>
         <%
             }else{
-                out.print("Bonjour "+session.getAttribute("user"));
+                out.print("Bonjour "+((User)session.getAttribute("user")).getUsername());
         %>
                 <a href="home?action=disconnect">Disconnect</a>
         <%
