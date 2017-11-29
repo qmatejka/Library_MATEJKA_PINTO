@@ -21,7 +21,7 @@ public class Library {
         
         this.users.add(new User("admin", "admin", true));
         this.users.add(new User("biblio", "biblio", true));
-        this.users.add(new User("custom", "custom", false));
+        this.users.add(new User("test", "test", false));
     }
     
     public User getUserByName(String name){
