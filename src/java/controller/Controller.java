@@ -136,9 +136,8 @@ public class Controller extends HttpServlet {
                 if(library.getBookByAuthor(search) != null && !results.contains(library.getBookByAuthor(search)))
                     results.add(library.getBookByAuthor(search));
                 for(Book b : library.getBooks()){
-                    //if(search.toLowerCase().contains(b.getAuthor().toLowerCase()) ||
-                    //   search.toLowerCase().contains(b.getName().toLowerCase())){
-                    if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(b.getAuthor()).find()){
+                    if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(b.getAuthor()).find()
+                    || Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(b.getName()).find()){
                         if(!results.contains(b))
                             results.add(b);
                     }

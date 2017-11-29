@@ -21,7 +21,7 @@
         <h1><% out.print(book.getName()); %></h1>
         <li>
             <ul>ID: <% out.print(book.getIdISBN()); %></ul>
-            <ul>Author: <% out.print(book.getAutor()); %></ul>
+            <ul>Author: <% out.print(book.getAuthor()); %></ul>
             <ul>Stock available: <% out.print(book.getStockAvailable()); %></ul>
             <ul>Stock total: <% out.print(book.getStockTotal()); %></ul>
         </li>
