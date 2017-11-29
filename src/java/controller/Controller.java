@@ -73,57 +73,77 @@ public class Controller extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        RequestDispatcher rd = null;
+          RequestDispatcher rd = null;
         Book book = null;
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        if(request.getParameter("add")!=null){
-            book = new Book(
+
+        String action = request.getParameter("action");
+        
+        switch(action){
+            case "add":
+                book = new Book(
                     request.getParameter("name"), 
                     request.getParameter("author"), 
                     request.getParameter("isbn"), 
                     Integer.parseInt(request.getParameter("stock")), 
                     Integer.parseInt(request.getParameter("stockTotal"))
-            );
-            request.setAttribute("book", book);       
-            rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
-        }else if(request.getParameter("update") != null){
-            try {
-                book = library.getBookByISBN(request.getParameter("isbn"));
-                book.setName(request.getParameter("name"));
-                book.setAuthor(request.getParameter("author"));
-                book.setStockAvailable(Integer.parseInt(request.getParameter("stock")));
-                book.setStockTotal(Integer.parseInt(request.getParameter("stockTotal")));
-                request.setAttribute("book", book);  
-            } catch (BookNotFoundException ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
-        }else if(request.getParameter("remove") != null){
-            try {
+                );
+                request.setAttribute("book", book);       
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
+            break;
+            
+            case "update":
+                try {
+                    book = library.getBookByISBN(request.getParameter("isbn"));
+                    book.setName(request.getParameter("name"));
+                    book.setAuthor(request.getParameter("author"));
+                    book.setStockAvailable(Integer.parseInt(request.getParameter("stock")));
+                    book.setStockTotal(Integer.parseInt(request.getParameter("stockTotal")));
+                    request.setAttribute("book", book);  
+                } catch (BookNotFoundException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
+                
+            break;
+            
+            case "remove":
+             try {
                 book = library.getBookByISBN(request.getParameter("isbn"));
                 library.getBooks().remove(book);
+                String search = request.getParameter("searchValue");
+                 ArrayList<Book> results = searchBook(search, library);
+                 request.setAttribute("searchResults", results);
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
             } catch (BookNotFoundException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else{
-            User user = library.getUserByName(username);
-            if(user != null){
-                if ((user.getUsername().equalsIgnoreCase(username))
-                      && (user.getPassword().equals(password))) {
-                    HttpSession session = request.getSession();
-                    session.setAttribute("user", user);
-                    rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
-                    //User user = new User(username, password);
-                    //request.setAttribute("user", user);
+            break;    
+        
+            case "Connect":
+                User user = library.getUserByName(username);
+                if(user != null){
+                    if ((user.getUsername().equalsIgnoreCase(username))
+                          && (user.getPassword().equals(password))) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("user", user);
+                        rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
+                        //User user = new User(username, password);
+                        //request.setAttribute("user", user);
+                    } else {
+                        rd = request.getRequestDispatcher(VIEW_FOLDER+"/error.jsp");
+                    }
                 } else {
                     rd = request.getRequestDispatcher(VIEW_FOLDER+"/error.jsp");
-                }
-            } else {
-                rd = request.getRequestDispatcher(VIEW_FOLDER+"/error.jsp");
-            } 
+                } 
+            break;
+            default:
+            break;
         }
+
+          
+        
         rd.forward(request, response);
     }
     

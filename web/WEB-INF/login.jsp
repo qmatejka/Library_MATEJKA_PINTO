@@ -8,5 +8,5 @@
 <form action='home' method='POST'>
     Login: <input type='text' name='username'/>
     Password: <input type='password' name='password'/>
-    <input type='submit' value='Connect'/>
+    <input type='submit' name="action" value='Connect'/>
 </form>

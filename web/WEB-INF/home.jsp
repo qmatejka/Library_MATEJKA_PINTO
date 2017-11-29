@@ -40,9 +40,9 @@
                     Stock total: <input type="number" name="stockTotal" size="30" value="<%=book.getStockTotal()%>" />
                     Stock:  <input type="number" name="stock" size="30" value="<%=book.getStockAvailable()%>" />
                     <% if(user != null && user.isAdmin()){ %>
-                        <button type="submit" name="add" value="add">Add</button>
-                        <button type="submit" name="update" value="update">Update</button>
-                        <button type="submit" name="remove" value="remove">Remove</button>
+                        <button type="submit" name="action" value="add">Add</button>
+                        <button type="submit" name="action" value="update">Update</button>
+                        <button type="submit" name="action" value="remove">Remove</button>
                     <% } %>
                 </form>
         <%
