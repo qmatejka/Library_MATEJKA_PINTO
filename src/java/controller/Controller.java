@@ -33,6 +33,7 @@ public class Controller extends HttpServlet {
     private final static String VIEW_FOLDER = "/WEB-INF";
     private static final long serialVersionUID = -1951358628804251994L;
     private Library library = new Library();
+    private String lastSearch = null;
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -79,18 +80,21 @@ public class Controller extends HttpServlet {
         String password = request.getParameter("password");
 
         String action = request.getParameter("action");
-        
+        User user = null; 
         switch(action){
             case "add":
                 book = new Book(
-                    request.getParameter("name"), 
-                    request.getParameter("author"), 
                     request.getParameter("isbn"), 
+                    request.getParameter("author"), 
+                    request.getParameter("name"), 
                     Integer.parseInt(request.getParameter("stock")), 
                     Integer.parseInt(request.getParameter("stockTotal"))
                 );
-                request.setAttribute("book", book);       
-                rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
+                library.getBooks().add(book);  
+                if(this.lastSearch != null){
+                    request.setAttribute("searchResults", this.searchBook(this.lastSearch, library));
+                }
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
             break;
             
             case "update":
@@ -100,11 +104,14 @@ public class Controller extends HttpServlet {
                     book.setAuthor(request.getParameter("author"));
                     book.setStockAvailable(Integer.parseInt(request.getParameter("stock")));
                     book.setStockTotal(Integer.parseInt(request.getParameter("stockTotal")));
-                    request.setAttribute("book", book);  
+                    request.setAttribute("book", book);
+                    if(this.lastSearch != null){
+                         request.setAttribute("searchResults", this.searchBook(this.lastSearch, library));
+                    }
                 } catch (BookNotFoundException ex) {
                     Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                rd = request.getRequestDispatcher(VIEW_FOLDER+"/displayBook.jsp");
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
                 
             break;
             
@@ -112,9 +119,10 @@ public class Controller extends HttpServlet {
              try {
                 book = library.getBookByISBN(request.getParameter("isbn"));
                 library.getBooks().remove(book);
-                String search = request.getParameter("searchValue");
-                 ArrayList<Book> results = searchBook(search, library);
-                 request.setAttribute("searchResults", results);
+           
+                if(this.lastSearch != null){
+                    request.setAttribute("searchResults", this.searchBook(this.lastSearch, library));
+                }
                 rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
             } catch (BookNotFoundException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -122,7 +130,7 @@ public class Controller extends HttpServlet {
             break;    
         
             case "Connect":
-                User user = library.getUserByName(username);
+                user = library.getUserByName(username);
                 if(user != null){
                     if ((user.getUsername().equalsIgnoreCase(username))
                           && (user.getPassword().equals(password))) {
@@ -136,8 +144,62 @@ public class Controller extends HttpServlet {
                     }
                 } else {
                     rd = request.getRequestDispatcher(VIEW_FOLDER+"/error.jsp");
-                } 
+                }
+                if(this.lastSearch != null){
+                    request.setAttribute("searchResults", this.searchBook(this.lastSearch, library));
+                }
             break;
+            case "Take":
+                try {
+                    book = library.getBookByISBN(request.getParameter("isbn"));
+                    if(book.getStockAvailable()>0){
+                        book.setStockAvailable(book.getStockAvailable()-1);
+                        user =(User) request.getSession().getAttribute("user");
+                        if(user != null) user.addBook(book);
+                        request.setAttribute("book", book);  
+                    }else{
+                        request.setAttribute("msgError", "No more stock available.");
+                    }
+                } catch (BookNotFoundException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
+                
+            break;
+            case "Return":
+                try {
+                    book = library.getBookByISBN(request.getParameter("isbn"));
+                    book.setStockAvailable(book.getStockAvailable()+1);
+                    user =(User) request.getSession().getAttribute("user");
+                    if(user != null) user.removeBook(book);
+                    request.setAttribute("book", book);  
+                } catch (BookNotFoundException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
+                
+            break;
+            
+             case "bookForUser":
+                try {
+                    book = library.getBookByISBN(request.getParameter("isbn"));
+                    User userToAdd = library.getUserByName(request.getParameter("reader"));
+                    if(userToAdd!=null){
+                        if(book.getStockAvailable()>0){
+                           book.setStockAvailable(book.getStockAvailable()-1);
+                           userToAdd.addBook(book);
+                        }
+                    }
+                if(this.lastSearch != null){
+                  request.setAttribute("searchResults", this.searchBook(this.lastSearch, library));
+                }
+                } catch (BookNotFoundException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                rd = request.getRequestDispatcher(VIEW_FOLDER+"/home.jsp");
+                
+            break;
+            
             default:
             break;
         }
@@ -166,6 +228,7 @@ public class Controller extends HttpServlet {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        this.lastSearch=search;
         return results;
     }
     

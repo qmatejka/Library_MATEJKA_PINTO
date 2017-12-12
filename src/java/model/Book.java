@@ -1,11 +1,26 @@
 package model;
 
-
-public class Book {
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+@Entity
+@Table(name="Book")
+public class Book implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Column(name="IDISBN", nullable= false)
     private String idISBN;
+    @Column(name="author")
     private String author;
+    @Column(name="name")
     private String name;
+    @Column(name="stockAvailable")
     private int stockAvailable;
+    @Column(name="stockTotal", nullable= false)
     private int stockTotal;
 
     public Book(String isbn,String autor, String name, int stockAvailable, int stockTotal) {
